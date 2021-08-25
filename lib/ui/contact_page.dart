@@ -4,7 +4,6 @@ import 'package:agenda_contatos/helpers/contact_helper.dart';
 import 'package:flutter/material.dart';
 
 class ContactPage extends StatefulWidget {
-
   final Contact contact;
 
   ContactPage({this.contact});
@@ -14,7 +13,6 @@ class ContactPage extends StatefulWidget {
 }
 
 class _ContactPageState extends State<ContactPage> {
-
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
@@ -29,7 +27,7 @@ class _ContactPageState extends State<ContactPage> {
   void initState() {
     super.initState();
 
-    if(widget.contact == null){
+    if (widget.contact == null) {
       _editedContact = Contact();
     } else {
       _editedContact = Contact.fromMap(widget.contact.toMap());
@@ -43,6 +41,7 @@ class _ContactPageState extends State<ContactPage> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
+      onWillPop: _requestPop,
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.purple,
@@ -51,7 +50,7 @@ class _ContactPageState extends State<ContactPage> {
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            if(_editedContact.name != null && _editedContact.name.isNotEmpty){
+            if (_editedContact.name != null && _editedContact.name.isNotEmpty) {
               Navigator.pop(context, _editedContact);
             } else {
               FocusScope.of(context).requestFocus(_nameFocus);
@@ -81,7 +80,9 @@ class _ContactPageState extends State<ContactPage> {
               TextField(
                 controller: _nameController,
                 focusNode: _nameFocus,
-                decoration: InputDecoration(labelText: "Nome",),
+                decoration: InputDecoration(
+                  labelText: "Nome",
+                ),
                 onChanged: (text) {
                   _userEdited = true;
                   setState(() {
@@ -91,7 +92,9 @@ class _ContactPageState extends State<ContactPage> {
               ),
               TextField(
                 controller: _emailController,
-                decoration: InputDecoration(labelText: "Email",),
+                decoration: InputDecoration(
+                  labelText: "Email",
+                ),
                 onChanged: (text) {
                   _userEdited = true;
                   _editedContact.email = text;
@@ -100,7 +103,9 @@ class _ContactPageState extends State<ContactPage> {
               ),
               TextField(
                 controller: _phoneController,
-                decoration: InputDecoration(labelText: "Phone",),
+                decoration: InputDecoration(
+                  labelText: "Phone",
+                ),
                 onChanged: (text) {
                   _userEdited = true;
                   _editedContact.phone = text;
@@ -112,5 +117,37 @@ class _ContactPageState extends State<ContactPage> {
         ),
       ),
     );
+  }
+
+  Future<bool> _requestPop() {
+    if (_userEdited) {
+      showDialog(
+        context: context,
+        builder: (context){
+          return AlertDialog(
+            title: Text("Descartar Alterações?"),
+            content: Text("Se sair as altereções serão perdidas."),
+            actions: [
+              TextButton(
+                child: Text("Cancelar"),
+                onPressed: (){
+                  Navigator.pop(context);
+                },
+              ),
+              TextButton(
+                child: Text("Sim"),
+                onPressed: (){
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          );
+        }
+      );
+      return Future.value(false);
+    } else {
+      return Future.value(true);
+    }
   }
 }
