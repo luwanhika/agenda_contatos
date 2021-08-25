@@ -19,6 +19,8 @@ class _ContactPageState extends State<ContactPage> {
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
 
+  final _nameFocus = FocusNode();
+
   bool _userEdited = false;
 
   Contact _editedContact;
@@ -40,64 +42,73 @@ class _ContactPageState extends State<ContactPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.purple,
-        title: Text(_editedContact.name ?? "Novo Contato"),
-        centerTitle: true,
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        child: Icon(Icons.save),
-        backgroundColor: Colors.purple,
-      ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(10),
-        child: Column(
-          children: [
-            GestureDetector(
-              child: Container(
-                width: 140,
-                height: 140,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  image: DecorationImage(
-                    image: _editedContact.img != null
-                        ? FileImage(File(_editedContact.img))
-                        : AssetImage("images/person.jpeg"),
+    return WillPopScope(
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.purple,
+          title: Text(_editedContact.name ?? "Novo Contato"),
+          centerTitle: true,
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            if(_editedContact.name != null && _editedContact.name.isNotEmpty){
+              Navigator.pop(context, _editedContact);
+            } else {
+              FocusScope.of(context).requestFocus(_nameFocus);
+            }
+          },
+          child: Icon(Icons.save),
+          backgroundColor: Colors.purple,
+        ),
+        body: SingleChildScrollView(
+          padding: EdgeInsets.all(10),
+          child: Column(
+            children: [
+              GestureDetector(
+                child: Container(
+                  width: 140,
+                  height: 140,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    image: DecorationImage(
+                      image: _editedContact.img != null
+                          ? FileImage(File(_editedContact.img))
+                          : AssetImage("images/person.jpeg"),
+                    ),
                   ),
                 ),
               ),
-            ),
-            TextField(
-              controller: _nameController,
-              decoration: InputDecoration(labelText: "Nome",),
-              onChanged: (text) {
-                _userEdited = true;
-                setState(() {
-                  _editedContact.name = text;
-                });
-              },
-            ),
-            TextField(
-              controller: _emailController,
-              decoration: InputDecoration(labelText: "Email",),
-              onChanged: (text) {
-                _userEdited = true;
-                _editedContact.email = text;
-              },
-              keyboardType: TextInputType.emailAddress,
-            ),
-            TextField(
-              controller: _phoneController,
-              decoration: InputDecoration(labelText: "Phone",),
-              onChanged: (text) {
-                _userEdited = true;
-                _editedContact.phone = text;
-              },
-              keyboardType: TextInputType.phone,
-            ),
-          ],
+              TextField(
+                controller: _nameController,
+                focusNode: _nameFocus,
+                decoration: InputDecoration(labelText: "Nome",),
+                onChanged: (text) {
+                  _userEdited = true;
+                  setState(() {
+                    _editedContact.name = text;
+                  });
+                },
+              ),
+              TextField(
+                controller: _emailController,
+                decoration: InputDecoration(labelText: "Email",),
+                onChanged: (text) {
+                  _userEdited = true;
+                  _editedContact.email = text;
+                },
+                keyboardType: TextInputType.emailAddress,
+              ),
+              TextField(
+                controller: _phoneController,
+                decoration: InputDecoration(labelText: "Phone",),
+                onChanged: (text) {
+                  _userEdited = true;
+                  _editedContact.phone = text;
+                },
+                keyboardType: TextInputType.phone,
+              ),
+            ],
+          ),
         ),
       ),
     );
