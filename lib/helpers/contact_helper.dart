@@ -28,12 +28,12 @@ class ContactHelper {
 
   Future<Database> initDb() async {
     final databasePath = await getDatabasesPath();
-    final path = join(databasePath, "contacts.db");
+    final path = join(databasePath, "contactsnew.db");
 
     return await openDatabase(path, version: 1,
         onCreate: (Database db, int newerVersion) async {
       await db.execute(
-          "CREATE TABLE $contactTable($idColumn INTEGER PRIMARY KEY, $nameColumn TEXT, $emailColumn TEXT"
+          "CREATE TABLE $contactTable($idColumn INTEGER PRIMARY KEY, $nameColumn TEXT, $emailColumn TEXT,"
           "$phoneColumn TEXT, $imgColumn TEXT)");
     });
   }
@@ -51,7 +51,7 @@ class ContactHelper {
         where: "$idColumn = ?",
         whereArgs: [id]);
     if (maps.length > 0) {
-      return Contact.fromMap(Map, maps.first);
+      return Contact.fromMap(maps.first);
     } else {
       return null;
     }
@@ -72,9 +72,9 @@ class ContactHelper {
   Future<List> gettAllContact() async {
     Database dbContact = await db;
     List listMap = await dbContact.rawQuery("SELECT * FROM $contactTable");
-    List<Contact> listContact = List();
+    List<Contact> listContact = [];
     for(Map m in listMap){
-      listContact.add(Contact.fromMap(Map, m));
+      listContact.add(Contact.fromMap(m));
     }
     return listContact;
   }
@@ -98,7 +98,9 @@ class Contact {
   String phone;
   String img;
 
-  Contact.fromMap(Map, map) {
+  Contact();
+
+  Contact.fromMap(Map map) {
     id = map[idColumn];
     name = map[nameColumn];
     email = map[emailColumn];
