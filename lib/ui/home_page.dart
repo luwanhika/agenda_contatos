@@ -94,17 +94,81 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       onTap: () {
-        _showContactPage(contact: contacts[index]);
+        _showOptions(context, index);
+      },
+    );
+  }
+
+  void _showOptions(BuildContext context, int index) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return BottomSheet(
+          onClosing: (){},
+          builder: (context) {
+          return Container(
+            padding: EdgeInsets.all(10),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: TextButton(
+                    child: Text(
+                      "Ligar",
+                      style: TextStyle(color: Colors.purple, fontSize: 18),
+                    ),
+                    onPressed: (){
+
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: TextButton(
+                    child: Text(
+                      "Editar",
+                      style: TextStyle(color: Colors.purple, fontSize: 18),
+                    ),
+                    onPressed: (){
+                      Navigator.pop(context);
+                      _showContactPage(contact: contacts[index]);
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: TextButton(
+                    child: Text(
+                      "Excluir",
+                      style: TextStyle(color: Colors.purple, fontSize: 18),
+                    ),
+                    onPressed: (){
+                      helper.deleteContact(contacts[index].id);
+                      setState(() {
+                        contacts.removeAt(index);
+                        Navigator.pop(context);
+                      });
+                    },
+                  ),
+                ),
+              ],
+            ),
+          );
+        });
       },
     );
   }
 
   void _showContactPage({Contact contact}) async {
-    final recContact = await Navigator.push(context,
-      MaterialPageRoute(builder: (context)=> ContactPage(contact: contact,))
-    );
-    if(recContact != null){
-      if(contact != null){
+    final recContact = await Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => ContactPage(
+                  contact: contact,
+                )));
+    if (recContact != null) {
+      if (contact != null) {
         await helper.updateContact(recContact);
         _getAllContacts();
       } else {
@@ -114,12 +178,11 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  void _getAllContacts(){
+  void _getAllContacts() {
     helper.gettAllContact().then((list) {
       setState(() {
         contacts = list;
       });
     });
   }
-
 }
